@@ -1,0 +1,30 @@
+{
+    "name": "dgc/mongo-odm",
+    "type": "symfony-bundle",
+    "description": "Symfony Mongo ODM bundle",
+    "keywords": ["MongoDB", "ODM", "Database", "Persistence"],
+    "homepage": "",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tobias Kempkensteffen",
+            "email": "tobias.kempkensteffen@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "symfony/framework-bundle": "~3.0",
+        "symfony/dependency-injection": "~3.0",
+        "mongodb/mongodb": "~1.1",
+        "doctrine/doctrine-bundle": "^1.6"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4"
+    },
+    "suggest": {
+        "symfony/web-profiler-bundle": "To use the data collector."
+    },
+    "autoload": {
+        "psr-4": { "DGC\\MongoODMBundle\\": "" }
+    }
+}

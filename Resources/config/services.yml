@@ -1,0 +1,46 @@
+services:
+
+    dgc_mongo_odm.connection_manager:
+        class: DGC\MongoODMBundle\Service\ConnectionManager
+        arguments: [ "%dgc_mongo_odm.config%" ]
+
+    dgc_mongo_odm.document_manager:
+        class: DGC\MongoODMBundle\Service\DocumentManager
+        arguments: [ "@dgc_mongo_odm.connection_manager", "@dgc_mongo_odm.proxy_factory", "@dgc_mongo_odm.metadata", "%dgc_mongo_odm.config%" ]
+
+    dgc_mongo_odm.converter:
+        class: DGC\MongoODMBundle\Service\ConverterManager
+        arguments: [ "@service_container" ]
+
+    dgc_mongo_odm.metadata:
+        class: DGC\MongoODMBundle\Service\MetadataManager
+        arguments: [ "@annotation_reader" ]
+
+    dgc_mongo_odm.proxy_factory:
+        class: DGC\MongoODMBundle\Service\ProxyFactory
+        arguments: [ "%kernel.cache_dir%", "%dgc_mongo_odm.config%", "%kernel.debug%", "@dgc_mongo_odm.metadata", "@service_container" ]
+
+
+    # CONVERTER
+    dgc_mongo_odm.converter.array:
+        class: DGC\MongoODMBundle\Converter\ArrayConverter
+    dgc_mongo_odm.converter.bool:
+        class: DGC\MongoODMBundle\Converter\BoolConverter
+    dgc_mongo_odm.converter.date:
+        class: DGC\MongoODMBundle\Converter\DateConverter
+    dgc_mongo_odm.converter.float:
+        class: DGC\MongoODMBundle\Converter\FloatConverter
+    dgc_mongo_odm.converter.int:
+        class: DGC\MongoODMBundle\Converter\IntConverter
+    dgc_mongo_odm.converter.object:
+        class: DGC\MongoODMBundle\Converter\ObjectConverter
+    dgc_mongo_odm.converter.objectid:
+        class: DGC\MongoODMBundle\Converter\ObjectIdConverter
+    dgc_mongo_odm.converter.raw:
+        class: DGC\MongoODMBundle\Converter\RawConverter
+    dgc_mongo_odm.converter.string:
+        class: DGC\MongoODMBundle\Converter\StringConverter
+
+    dgc_mongo_odm.converter.reference_many:
+        class: DGC\MongoODMBundle\Converter\ReferenceManyConverter
+        arguments: [ "@dgc_mongo_odm.proxy_factory", "@dgc_mongo_odm.metadata" ]
