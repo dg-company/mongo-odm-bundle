@@ -4,7 +4,7 @@ namespace DGC\MongoODMBundle\Service;
 
 use DGC\MongoODMBundle\Exception\NoDocumentException;
 use DGC\MongoODMBundle\QueryBuilder\QueryBuilder;
-use MongoDB\Collection;
+use DGC\MongoODMBundle\MongoDB\Collection;
 use DGC\MongoODMBundle\Document\Document;
 use DGC\MongoODMBundle\Document\DocumentProxyInterface;
 use DGC\MongoODMBundle\Exception\MissingIdException;
@@ -15,21 +15,17 @@ class DocumentManager
     protected $proxyFactory;
     protected $metadataManager;
     protected $config;
+    protected $debug;
 
-    protected $defaultQueryOptions = [
-        'typeMap' => [
-            'root' => 'array',
-            'document' => 'array',
-            'array' => 'array'
-        ]
-    ];
+    protected $defaultQueryOptions = [];
 
-    public function __construct(ConnectionManager $connectionManager, ProxyFactory $proxyFactory, MetadataManager $metadataManager, array $config)
+    public function __construct(ConnectionManager $connectionManager, ProxyFactory $proxyFactory, MetadataManager $metadataManager, array $config, bool $debug)
     {
         $this->connectionManager = $connectionManager;
         $this->proxyFactory = $proxyFactory;
         $this->metadataManager = $metadataManager;
         $this->config = $config;
+        $this->debug = $debug;
     }
 
     public function getCollectionForClass(string $class): Collection
@@ -45,7 +41,13 @@ class DocumentManager
         //get collection
         $collectionName = $this->metadataManager->getCollectionName($class);
 
-        return $connection->selectDatabase($databaseName)->selectCollection($collectionName);
+        return new Collection($connection->getManager(), $databaseName, $collectionName, [
+            'typeMap' => [
+                'root' => 'array',
+                'document' => 'array',
+                'array' => 'array'
+            ]
+        ]);
     }
 
     public function findOneRaw(string $class, array $query = [], array $options = []): ?array
@@ -82,6 +84,7 @@ class DocumentManager
 
     /**
      * @param Document|Document[] $documents
+     * @throws NoDocumentException
      * @throws MissingIdException
      */
     public function save($documents)

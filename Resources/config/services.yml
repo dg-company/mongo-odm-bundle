@@ -6,7 +6,7 @@ services:
 
     dgc_mongo_odm.document_manager:
         class: DGC\MongoODMBundle\Service\DocumentManager
-        arguments: [ "@dgc_mongo_odm.connection_manager", "@dgc_mongo_odm.proxy_factory", "@dgc_mongo_odm.metadata", "%dgc_mongo_odm.config%" ]
+        arguments: [ "@dgc_mongo_odm.connection_manager", "@dgc_mongo_odm.proxy_factory", "@dgc_mongo_odm.metadata", "%dgc_mongo_odm.config%", "%kernel.debug%" ]
 
     dgc_mongo_odm.converter:
         class: DGC\MongoODMBundle\Service\ConverterManager
