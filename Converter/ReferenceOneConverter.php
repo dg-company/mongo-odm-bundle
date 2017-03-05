@@ -8,7 +8,7 @@ use DGC\MongoODMBundle\Exception\InvalidFieldValueException;
 use DGC\MongoODMBundle\Service\MetadataManager;
 use DGC\MongoODMBundle\Service\ProxyFactory;
 
-class ReferenceManyConverter extends AbstractConverter
+class ReferenceOneConverter extends AbstractConverter
 {
 
     protected $proxyFactory;
@@ -28,40 +28,27 @@ class ReferenceManyConverter extends AbstractConverter
 
         $references = [];
 
-        /** @var Document $document */
-        foreach ($value as $document) {
-            if (!$document instanceof Document) throw new InvalidFieldValueException("Unable to persist reference to object which is no child of ".Document::class);
+        if (!$value instanceof Document) throw new InvalidFieldValueException("Unable to persist reference to object which is no child of ".Document::class);
 
-            if ($document instanceof DocumentProxyInterface) {
-                $class = get_parent_class($document);
-            } else {
-                $class = get_class($document);
-            }
-
-            $references[] = [
-                '$ref' => $this->metadataManager->getCollectionName($class),
-                '$id' => $document->getId()
-            ];
+        if ($value instanceof DocumentProxyInterface) {
+            $class = get_parent_class($value);
+        } else {
+            $class = get_class($value);
         }
 
-        return $references;
+        return [
+            '$ref' => $this->metadataManager->getCollectionName($class),
+            '$id' => $value->getId()
+        ];
     }
 
     public function toObjectValue($value, array $options)
     {
         if ($value === null || !is_array($value)) return null;
 
-        $classes = [];
-
-        foreach ($value as $ref) {
-
-            $classes[] = $this->proxyFactory->getProxyForClass($options['document'], [
-                '_id' => $ref['$id']
-            ]);
-
-        }
-
-        return $classes;
+        return $this->proxyFactory->getProxyForClass($options['document'], [
+            '_id' => $value['$id']
+        ]);
     }
 
 }

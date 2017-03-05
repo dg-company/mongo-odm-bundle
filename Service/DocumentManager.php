@@ -2,6 +2,7 @@
 
 namespace DGC\MongoODMBundle\Service;
 
+use DGC\MongoODMBundle\QueryBuilder\QueryBuilder;
 use MongoDB\Collection;
 use DGC\MongoODMBundle\Document\Document;
 use DGC\MongoODMBundle\Document\DocumentProxyInterface;
@@ -75,7 +76,7 @@ class DocumentManager
         return $documents;
     }
 
-    public function findOne(string $class = null, array $query): Document
+    public function findOne(string $class = null, array $query): ?Document
     {
         $result = $this->getCollectionForClass($class)->findOne($query, $this->defaultQueryOptions);
         if (!$result) return null;
@@ -103,6 +104,11 @@ class DocumentManager
         ], $updateData, [
             'upsert' => true
         ]);
+    }
+
+    public function createQueryBuilder(string $class): QueryBuilder
+    {
+        return new QueryBuilder($this, $class);
     }
 
 }

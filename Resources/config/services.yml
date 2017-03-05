@@ -44,3 +44,7 @@ services:
     dgc_mongo_odm.converter.reference_many:
         class: DGC\MongoODMBundle\Converter\ReferenceManyConverter
         arguments: [ "@dgc_mongo_odm.proxy_factory", "@dgc_mongo_odm.metadata" ]
+
+    dgc_mongo_odm.converter.reference_one:
+        class: DGC\MongoODMBundle\Converter\ReferenceOneConverter
+        arguments: [ "@dgc_mongo_odm.proxy_factory", "@dgc_mongo_odm.metadata" ]
