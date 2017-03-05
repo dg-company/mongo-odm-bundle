@@ -6,7 +6,6 @@ use DGC\MongoODMBundle\QueryBuilder\QueryBuilder;
 use MongoDB\Collection;
 use DGC\MongoODMBundle\Document\Document;
 use DGC\MongoODMBundle\Document\DocumentProxyInterface;
-use DGC\MongoODMBundle\Exception\ClassNotFoundException;
 use DGC\MongoODMBundle\Exception\MissingIdException;
 
 class DocumentManager
@@ -48,24 +47,21 @@ class DocumentManager
         return $connection->selectDatabase($databaseName)->selectCollection($collectionName);
     }
 
-    /**
-     * @param string $class
-     * @param $id
-     * @return array|null
-     * @internal
-     */
-    public function findRawById(string $class, $id): ?array
+    public function findOneRaw(string $class, array $query = [], array $options = []): ?array
     {
-        $result = $this->getCollectionForClass($class)->findOne([
-            '_id' => $id
-        ], $this->defaultQueryOptions);
-        //TODO: throw exception if not found
+        return $this->getCollectionForClass($class)->findOne($query, array_merge($this->defaultQueryOptions, $options));
+    }
+
+    public function findRaw(string $class, array $query = [], array $options = []): ?array
+    {
+        /** @var array $result */
+        $result = $this->getCollectionForClass($class)->find($query, array_merge($this->defaultQueryOptions, $options));
         return $result;
     }
 
-    public function find(string $class = null, array $query = []): array
+    public function find(string $class = null, array $query = [], array $options = []): array
     {
-        $result = $this->getCollectionForClass($class)->find($query, $this->defaultQueryOptions);
+        $result = $this->getCollectionForClass($class)->find($query, array_merge($this->defaultQueryOptions, $options));
         if (!$result) return null;
 
         $documents = [];
@@ -76,34 +72,47 @@ class DocumentManager
         return $documents;
     }
 
-    public function findOne(string $class = null, array $query): ?Document
+    public function findOne(string $class = null, array $query, array $options = []): ?Document
     {
-        $result = $this->getCollectionForClass($class)->findOne($query, $this->defaultQueryOptions);
+        $result = $this->getCollectionForClass($class)->findOne($query, array_merge($this->defaultQueryOptions, $options));
         if (!$result) return null;
         return $this->proxyFactory->getProxyForClass($class, $result);
     }
 
-    public function save(Document $document)
+    /**
+     * @param Document|Document[] $documents
+     * @throws MissingIdException
+     */
+    public function save($documents)
     {
-        //get proxy for document
-        if (!$document instanceof DocumentProxyInterface) {
-            $document = $this->proxyFactory->getProxyForDocument($document);
+        if (!is_array($documents)) {
+            $documents = [$documents];
         }
 
-        $data = $document->_getData();
+        foreach ($documents as $document) {
 
-        if (!isset($data['_id']) OR $data['_id'] === null) throw new MissingIdException();
+            //get proxy for document
+            if (!$document instanceof DocumentProxyInterface) {
+                $document = $this->proxyFactory->getProxyForDocument($document);
+            }
 
-        $updateData = $data;
-        unset($updateData['_id']);
+            $data = $document->_getData();
 
-        $collection = $this->getCollectionForClass(get_parent_class($document));
+            if (!isset($data['_id']) OR $data['_id'] === null) throw new MissingIdException();
 
-        $collection->replaceOne([
-            '_id' => $data['_id']
-        ], $updateData, [
-            'upsert' => true
-        ]);
+            $updateData = $data;
+            unset($updateData['_id']);
+
+            $collection = $this->getCollectionForClass(get_parent_class($document));
+
+            $collection->replaceOne([
+                '_id' => $data['_id']
+            ], $updateData, [
+                'upsert' => true
+            ]);
+
+        }
+
     }
 
     public function createQueryBuilder(string $class): QueryBuilder

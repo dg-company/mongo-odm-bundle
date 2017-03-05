@@ -6,6 +6,7 @@ use DGC\MongoODMBundle\Document\Document;
 use MongoDB\BSON\ObjectID;
 use MongoDB\BSON\Regex;
 use DGC\MongoODMBundle\Exception\NotScalarValueException;
+use MongoDB\BSON\UTCDateTime;
 
 class Field
 {
@@ -26,16 +27,23 @@ class Field
 
     protected function checkValue($value)
     {
+        if ($value instanceof \DateTime) {
+            $ms  = ($value->getTimestamp()*1000)+intval($value->format('u'));
+            return new UTCDateTime($ms);
+        }
+
         if (
             ! is_scalar($value) AND
             ! $value instanceof Regex AND
             ! $value instanceof ObjectID
         ) throw new NotScalarValueException();
+
+        return $value;
     }
 
     public function equals($value): Expression
     {
-        $this->checkValue($value);
+        $value = $this->checkValue($value);
 
         $this->query = $value;
 
@@ -44,7 +52,7 @@ class Field
 
     protected function compare(string $operator, $value): Expression
     {
-        $this->checkValue($value);
+        $value = $this->checkValue($value);
 
         $this->query = [
             $operator => $value
@@ -76,6 +84,19 @@ class Field
     public function lte($value): Expression
     {
         return $this->compare('$lte', $value);
+    }
+
+    public function range($min, $max): Expression
+    {
+        $min = $this->checkValue($min);
+        $max = $this->checkValue($max);
+
+        $this->query = [
+            '$gte' => $min,
+            '$lte' => $max
+        ];
+
+        return $this->expression;
     }
 
     public function in($value): Expression
@@ -132,10 +153,10 @@ class Field
         return $this->expression;
     }
 
-    public function where(string $js): Expression
+    public function where(string $javaScript): Expression
     {
         $this->query = [
-            '$where' => $js
+            '$where' => $javaScript
         ];
 
         return $this->expression;

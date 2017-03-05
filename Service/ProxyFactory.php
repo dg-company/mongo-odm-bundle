@@ -101,7 +101,11 @@ class ProxyFactory
             private function _load()
             {
                 if ($this->_hydrated) return;
-                $this->_hydrate($this->_documentManager->findRawById(get_parent_class($this), $this->id));
+                $data = $this->_documentManager->findOneRaw(get_parent_class($this), [
+                    "_id" => $this->id
+                ]);
+                if ($data === null) throw new \Exception("Document with ID ".$this->id." not found for class ".get_parent_class($this));
+                $this->_hydrate($data);
             }
             
             private function _hydrateFromDocument($document)

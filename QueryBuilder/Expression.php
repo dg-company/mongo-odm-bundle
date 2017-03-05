@@ -80,4 +80,24 @@ class Expression
         throw new QueryBuilderException("getQuery() has to be called on QueryBuilder");
     }
 
+    public function limit(int $limit): Expression
+    {
+        throw new QueryBuilderException("limit() has to be called on QueryBuilder");
+    }
+
+    public function skip(int $skip): Expression
+    {
+        throw new QueryBuilderException("skip() has to be called on QueryBuilder");
+    }
+
+    public function sort($sortArrayOrField, $order = null): Expression
+    {
+        throw new QueryBuilderException("sort() has to be called on QueryBuilder");
+    }
+
+    public function hydrate(bool $hydrate = false): Expression
+    {
+        throw new QueryBuilderException("sort() has to be called on QueryBuilder");
+    }
+
 }
