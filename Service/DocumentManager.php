@@ -2,6 +2,7 @@
 
 namespace DGC\MongoODMBundle\Service;
 
+use DGC\MongoODMBundle\Exception\NoDocumentException;
 use DGC\MongoODMBundle\QueryBuilder\QueryBuilder;
 use MongoDB\Collection;
 use DGC\MongoODMBundle\Document\Document;
@@ -90,6 +91,8 @@ class DocumentManager
         }
 
         foreach ($documents as $document) {
+
+            if (!$document instanceof Document) throw new NoDocumentException("The provided object is no instance of ".Document::class);
 
             //get proxy for document
             if (!$document instanceof DocumentProxyInterface) {
