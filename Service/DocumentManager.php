@@ -2,6 +2,7 @@
 
 namespace DGC\MongoODMBundle\Service;
 
+use DGC\MongoODMBundle\DataCollector\DataCollector;
 use DGC\MongoODMBundle\Exception\NoDocumentException;
 use DGC\MongoODMBundle\QueryBuilder\QueryBuilder;
 use DGC\MongoODMBundle\MongoDB\Collection;
@@ -16,16 +17,25 @@ class DocumentManager
     protected $metadataManager;
     protected $config;
     protected $debug;
+    protected $dataCollector;
 
     protected $defaultQueryOptions = [];
 
-    public function __construct(ConnectionManager $connectionManager, ProxyFactory $proxyFactory, MetadataManager $metadataManager, array $config, bool $debug)
+    public function __construct(
+        ConnectionManager $connectionManager,
+        ProxyFactory $proxyFactory,
+        MetadataManager $metadataManager,
+        array $config,
+        bool $debug,
+        DataCollector $dataCollector
+    )
     {
         $this->connectionManager = $connectionManager;
         $this->proxyFactory = $proxyFactory;
         $this->metadataManager = $metadataManager;
         $this->config = $config;
         $this->debug = $debug;
+        $this->dataCollector = $dataCollector;
     }
 
     public function getCollectionForClass(string $class): Collection
@@ -41,13 +51,17 @@ class DocumentManager
         //get collection
         $collectionName = $this->metadataManager->getCollectionName($class);
 
+        if ($this->debug) {
+            $this->dataCollector->observeDatabaseConnection($connection, $connectionName, $databaseName);
+        }
+
         return new Collection($connection->getManager(), $databaseName, $collectionName, [
             'typeMap' => [
                 'root' => 'array',
                 'document' => 'array',
                 'array' => 'array'
             ]
-        ]);
+        ], $connectionName, $this->debug?$this->dataCollector:null);
     }
 
     public function findOneRaw(string $class, array $query = [], array $options = []): ?array
@@ -57,9 +71,8 @@ class DocumentManager
 
     public function findRaw(string $class, array $query = [], array $options = []): ?array
     {
-        /** @var array $result */
         $result = $this->getCollectionForClass($class)->find($query, array_merge($this->defaultQueryOptions, $options));
-        return $result;
+        return $result->toArray();
     }
 
     public function find(string $class = null, array $query = [], array $options = []): array

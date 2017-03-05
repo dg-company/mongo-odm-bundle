@@ -283,5 +283,7 @@ _Only the specified object(s) will be persisted! Referenced objects have to be p
 
 - Create Proxy objects when clearing cache for production environment
 - Add queries and performance to debug toolbar
-
-
+- GridFS
+- Implement embedded documents
+- Documentation: Debugging + MongoDB profiler
+- Debugger: Warnings
