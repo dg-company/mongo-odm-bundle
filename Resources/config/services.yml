@@ -20,6 +20,11 @@ services:
         class: DGC\MongoODMBundle\Service\ProxyFactory
         arguments: [ "%kernel.cache_dir%", "%dgc_mongo_odm.config%", "%kernel.debug%", "@dgc_mongo_odm.metadata", "@service_container" ]
 
+    dgc_mongo_odm.cache_warmer:
+        class: DGC\MongoODMBundle\CacheWarmer\CacheWarmer
+        arguments: [ "@kernel", "@dgc_mongo_odm.proxy_factory" ]
+        tags:
+            - { name: kernel.cache_warmer, priority: 0 }
 
     # CONVERTER
     dgc_mongo_odm.converter.array:
