@@ -108,7 +108,11 @@ class DataCollector extends \Symfony\Component\HttpKernel\DataCollector\DataColl
                 $parameters[] = json_encode($p);
             }
 
-            $this->queries[$queryKey]['queryString'] = $query['database'].'.'.$query['command'].'('.implode(", ", $parameters).')';
+            $queryString = $query['database'].'.'.$query['command'].'('.implode(", ", $parameters).')';
+
+            $queryString = preg_replace('@\{\"\$oid\"\:\"([a-f0-9]{24})\"\}@is', 'ObjectId("\1")', $queryString);
+
+            $this->queries[$queryKey]['queryString'] = $queryString;
 
             $numberOfQueries++;
 
