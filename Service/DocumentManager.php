@@ -96,7 +96,7 @@ class DocumentManager
     }
 
     /**
-     * @param Document|Document[] $documents
+     * @param Document|Document[]|Document|Document $documents
      * @throws NoDocumentException
      * @throws MissingIdException
      */
@@ -117,7 +117,7 @@ class DocumentManager
 
             $data = $document->_getData();
 
-            if (!isset($data['_id']) OR $data['_id'] === null) throw new MissingIdException();
+            if (!isset($data['_id']) OR $data['_id'] === null) throw new MissingIdException("Missing ID for document ".get_class($document));
 
             $updateData = $data;
             unset($updateData['_id']);

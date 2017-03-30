@@ -26,8 +26,6 @@ class ReferenceOneConverter extends AbstractConverter
 
         if (!is_array($value)) throw new InvalidFieldValueException("Expected value of type array");
 
-        $references = [];
-
         if (!$value instanceof Document) throw new InvalidFieldValueException("Unable to persist reference to object which is no child of ".Document::class);
 
         if ($value instanceof DocumentProxyInterface) {

@@ -14,7 +14,7 @@ class DataCollector extends \Symfony\Component\HttpKernel\DataCollector\DataColl
     protected $debugTokenCounter = 0;
 
     /** @var Client[] */
-    protected $connections;
+    protected $connections = [];
 
     protected $data = [];
 
