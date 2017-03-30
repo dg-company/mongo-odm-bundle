@@ -54,6 +54,13 @@ services:
         class: DGC\MongoODMBundle\Converter\ReferenceOneConverter
         arguments: [ "@dgc_mongo_odm.proxy_factory", "@dgc_mongo_odm.metadata" ]
 
+    dgc_mongo_odm.converter.embed_many:
+        class: DGC\MongoODMBundle\Converter\EmbedManyConverter
+        arguments: [ "@dgc_mongo_odm.proxy_factory", "@dgc_mongo_odm.metadata" ]
+
+    dgc_mongo_odm.converter.embed_one:
+        class: DGC\MongoODMBundle\Converter\EmbedOneConverter
+        arguments: [ "@dgc_mongo_odm.proxy_factory", "@dgc_mongo_odm.metadata" ]
 
     # DEBUG
     dgc_mongo_odm.data_collector.mongodb:

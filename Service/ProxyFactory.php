@@ -83,9 +83,11 @@ class ProxyFactory
                 $this->_converterManager = $serviceContainer->get("dgc_mongo_odm.converter");
                 $this->_documentManager = $serviceContainer->get("dgc_mongo_odm.document_manager");
             
-                if ($hydrationData instanceof \\DGC\\MongoODMBundle\\Document) {
+                if ($hydrationData instanceof \\DGC\\MongoODMBundle\\Document\\Document) {
                     $this->_hydrateFromDocument($hydrationData);
                 } elseif ($hydrationData !== null) $this->_hydrate($hydrationData);
+                
+                parent::__construct();
             }
             
             public function __debugInfo(): array

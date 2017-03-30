@@ -4,6 +4,7 @@ namespace DGC\MongoODMBundle\Service;
 
 use Doctrine\Common\Annotations\Reader;
 use DGC\MongoODMBundle\Annotation\Document;
+use DGC\MongoODMBundle\Annotation\EmbeddedDocument;
 use DGC\MongoODMBundle\Annotation\FieldAnnotationInterface;
 use DGC\MongoODMBundle\Exception\ClassNotFoundException;
 use DGC\MongoODMBundle\Exception\MissingDocumentAnnotationException;
@@ -30,7 +31,12 @@ class MetadataManager
         //parse document settings
         /** @var Document $documentAnnotation */
         $documentAnnotation = $this->annotationReader->getClassAnnotation($reflectionClass, Document::class);
-        if (!$documentAnnotation) throw new MissingDocumentAnnotationException();
+
+        if (!$documentAnnotation) {
+            $documentAnnotation = $this->annotationReader->getClassAnnotation($reflectionClass, EmbeddedDocument::class);
+            if (!$documentAnnotation) throw new MissingDocumentAnnotationException("Missing document annotation for ".$class);
+        }
+
         $settings = $documentAnnotation->getSettings();
 
         //parse properties

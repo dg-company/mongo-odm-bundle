@@ -283,6 +283,5 @@ _Only the specified object(s) will be persisted! Referenced objects have to be p
 
 - Add queries and performance to debug toolbar
 - GridFS
-- Implement embedded documents
 - Documentation: Debugging + MongoDB profiler
 - Debugger: Warnings
