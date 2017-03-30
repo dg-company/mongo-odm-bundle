@@ -23,7 +23,7 @@ class ConnectionManager
 
         if (!isset($this->connections[$name])) {
 
-            if (!isset($this->config['connections']['default'])) throw new ConnectionNotFoundException($name);
+            if (!isset($this->config['connections']['default'])) throw new ConnectionNotFoundException("Connection ".$name." not found");
 
             $config = $this->config['connections']['default'];
 

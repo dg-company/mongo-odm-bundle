@@ -124,7 +124,7 @@ class MetadataManager
         $metadata = $this->getMetadataForClass($class);
         if (isset($metadata['properties'][$propertyName])) {
             return $metadata['properties'][$propertyName]['converter'];
-        } else throw new UnknownPropertyException();
+        } else throw new UnknownPropertyException("Unknown property ".$propertyName." of class ".$class);
     }
 
     public function getConverterSettingsForProperty(string $class, string $propertyName): array

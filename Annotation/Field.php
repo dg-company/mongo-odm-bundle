@@ -3,7 +3,6 @@
 namespace DGC\MongoODMBundle\Annotation;
 
 use Doctrine\Common\Annotations\Annotation;
-use DGC\MongoODMBundle\Exception\MissingAnnotationOptionException;
 use DGC\MongoODMBundle\Exception\UnknownTypeException;
 
 /**
